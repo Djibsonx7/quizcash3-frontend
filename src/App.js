@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './components/Auth/Login';
+import SessionList from './components/Session/SessionList';
+import WaitingRoom from './components/Session/WaitingRoom';
+import GameSession from './components/Session/GameSession';
 
-function App() {
+const App = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  useEffect(() => {
+    // Exemple d'initialisation ou redirection automatique selon l'état utilisateur
+    if (!user) {
+      localStorage.setItem('user', JSON.stringify(null));
+    }
+  }, [user]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={user ? <SessionList /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/:sessionId/waitingroom"
+          element={user ? <WaitingRoom /> : <Navigate to="/login" />}
+        />
+        <Route
+          path="/:sessionId/game"
+          element={user ? <GameSession /> : <Navigate to="/login" />}
+        />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
